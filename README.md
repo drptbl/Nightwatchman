@@ -2,17 +2,15 @@
 
 ### Run
 
-`python nightwatchman.py configuration...`
+`python nightwatchman.py configuration...`  
 
-Must be run from nightwatchman root folder.
-
-Configuration names must match file names in "configurations" folder.
-
+Must be run from nightwatchman root folder.  
+Configuration names must match file names in "configurations" folder.  
 The ".json" extension is optional.
 
 ### Install Libraries
 
-`sudo pip install gspread`
+`sudo pip install gspread`    
 `sudo pip install jenkinsapi`
 
 ### Setup
@@ -23,10 +21,10 @@ The ".json" extension is optional.
 
 ### Sites
 
-gspread
-https://github.com/burnash/gspread
+gspread  
+https://github.com/burnash/gspread  
 http://gspread.readthedocs.org/en/latest/index.html
 
-jenkinsapi
-https://github.com/salimfadhley/jenkinsapi
+jenkinsapi  
+https://github.com/salimfadhley/jenkinsapi  
 https://jenkinsapi.readthedocs.org/en/latest/build.html
