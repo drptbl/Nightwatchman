@@ -80,7 +80,10 @@ def find_dicts(list, key, value=None):
 
 def get_build_parameters(build):
 
-    return build._data['actions'][1]['parameters']
+    for x in build._data['actions']:
+        if 'parameters' in x:
+            return x['parameters']
+    return None
 
 
 def find_build(job, build_spec, version=None, max_attempts=50):
@@ -104,6 +107,7 @@ def find_build(job, build_spec, version=None, max_attempts=50):
     last = job.get_last_buildnumber()
     for i in range(last, max(0, last - max_attempts), -1):
         b = job.get_build_metadata(i)
+        pprint(b._data)
         ps = get_build_parameters(b)
         rs = find_dicts(ps, "name", value="DSE_VERSION")
         print i, rs, ps
