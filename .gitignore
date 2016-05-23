@@ -1,0 +1,6 @@
+.idea
+credentials/google.json
+credentials/jenkins.json
+*.pyc
+examples/*
+!examples/QA_NightlyTests.txt

@@ -1,0 +1,11 @@
+{
+  "drive_file": "DSE Nightlies 2015Q1",
+  "sheet": "NWM 4.8.5",
+  "versions": ["4.8.5"],
+  "tests": [
+    {"job": "QA_Weekly_Solr"},
+    {"job": "QA_Weekly_Core"},
+    {"job": "QA_Weekly_Security"},
+    {"job": "QA_Weeklies_Analytics"}
+  ]
+}

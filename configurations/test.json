@@ -1,0 +1,8 @@
+{
+  "drive_file": "Fun API Testing",
+  "sheet": "NWM",
+  "versions": ["5.0.0"],
+  "tests": [
+    {"job": "QA_NightlyTests"}
+  ]
+}
