@@ -23,7 +23,7 @@ JOB = sys.argv[1]
 j = jenkins.get_job(JOB)
 
 BUILD = int(sys.argv[2]) if len(sys.argv) == 3 else j.get_last_buildnumber()
-b = j.get_build_metadata(BUILD)
+b = j.get_build(BUILD)
 
 with open("examples/{0}_{1}_metadata.txt".format(b.job.name, b.buildno), "w") as f:
     pprint.pprint(b._data, stream=f)

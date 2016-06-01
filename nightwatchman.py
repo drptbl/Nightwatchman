@@ -23,65 +23,56 @@ from base import *
 import sys
 
 
-def create_row(build):
-
-    return [
-        make_link(build.job.name, build.job.baseurl),
-        make_link(build.buildno, build.baseurl),
-        build._data['result'],
-        duration(int(build.get_duration().total_seconds())),
-        build.get_timestamp().strftime("%B %e, %Y @ %R")
-    ]
+class Context:
+    def __init__(self):
+        self.jenkins = None
+        self.writer = None
+        self.config = None
+        self.create_row = None
 
 
-def process_job(wks, jenkins, job_name, build_number):
+def process_job(context, build_spec, job_name, build_number):
 
-    build = jenkins.get_job(job_name).get_build(build_number)
-    cells = create_row(build)
-    print cells
-    wks.append_row(cells)
-
-
-def section_header(wks, job_name, build, jobs):
-
-    link = make_link("{0} #{1} ({2} jobs)".format(job_name, build.buildno, len(jobs)), build.baseurl)
-    print link
-    wks.append_row([link])
+    build = context.jenkins.get_job(job_name).get_build(build_number)
+    cells = context.create_row(build, columns=context.config.get("columns"))
+    # print cells
+    context.writer.write(cells)
 
 
-def process_test(wks, jenkins, config, build_spec):
+def process_test(context, build_spec):
 
-    parent_job = jenkins.get_job(build_spec['job'])
-    build = find_build(parent_job, config, build_spec)
+    parent_job = context.jenkins.get_job(build_spec['job'])
+    build = find_build(parent_job, context.config, build_spec)
     print build.buildno
 
     jobs = get_triggered_builds(build)  # [(job name, build)...]
     print "found {0} jobs".format(len(jobs))
 
-    section_header(wks, build_spec['job'], build, jobs)
+    header = [make_link("{0} #{1} ({2} jobs)".format(build_spec['job'], build.buildno, len(jobs)), build.baseurl)]
+    context.writer.write(header)
 
     for i, j in enumerate(jobs):
         print "writing: ", i, j
-        process_job(wks, jenkins, j[0], int(j[1]))
+        process_job(context, build_spec, j[0], int(j[1]))
 
-    wks.append_row([""])
+    context.writer.write([""])
 
 
-def generate_report(jenkins, config):
+def generate_report(context):
     """
     @param config: Dict loaded from configuration JSON file
     """
+    writer = context.config["writer"] if "writer" in context.config else "worksheet"
+    context.writer = {"worksheet": WorksheetWriter, "console": ConsoleWriter}[writer](context.config)
 
-    wks = get_worksheet(config['drive_file'], config['sheet'])
-    wks.resize(rows=1)
     now = datetime.utcnow().strftime("%Y%m%d %-I:%M %p")
-    wks.append_row(["Generated on: {0} UTC".format(now)])
-    wks.append_row([""])
+    context.writer.write(["Generated on: {0} UTC".format(now)])
+    context.writer.write([""])
 
-    for build_spec in config['tests']:
-        process_test(wks, jenkins, config, build_spec)
+    for build_spec in context.config['tests']:
+        process_test(context, build_spec)
 
-    wks.append_row(["NWM FINISHED"])
+    context.writer.write(["NWM FINISHED"])
 
 
 def main(args):
@@ -90,10 +81,13 @@ def main(args):
         print "Usage: nightwatchman jsonfiles..."
         sys.exit(0)
 
-    jenkins = get_jenkins()
+    context = Context()
+    context.jenkins = get_jenkins()
+    context.create_row = create_row
 
     for a in args:
-        generate_report(jenkins, load_config(a))
+        context.config = load_config(a)
+        generate_report(context)
 
 
 if __name__ == "__main__":

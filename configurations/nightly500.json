@@ -1,7 +1,7 @@
 {
   "drive_file": "DSE Nightlies 2015Q1",
   "sheet": "NWM 5.0.0",
-  "versions": ["5.0.0"],
+  "base": {"version": "5.0.0"},
   "tests": [
     {"job": "QA_NightlyTests"}
   ]

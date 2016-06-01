@@ -93,11 +93,18 @@ def compare(bps, config_bps):
             return False
     return True
 
-def find_build(job, config, build_spec, max_attempts=50):
+
+def combine(config, build_spec):
 
     base = dict(config["base"]) if "base" in config else {}
     base.update(build_spec)
-    print base
+    return base
+
+
+def find_build(job, config, build_spec, max_attempts=50):
+
+    base = combine(config, build_spec)
+    print "build spec:", base
 
     if "build" in base:
         return job.get_build(base["build"])
@@ -129,3 +136,33 @@ def get_triggered_builds(build):
 
     return jobs
 
+
+class WorksheetWriter:
+    def __init__(self, config):
+        wks = get_worksheet(config['drive_file'], config['sheet'])
+        wks.resize(rows=1)
+        self.worksheet = wks
+    def write(self, row):
+        self.worksheet.append_row(row)
+
+
+class ConsoleWriter:
+    def __init__(self, config):
+        pass
+    def write(self, row):
+        print row
+
+
+COLUMN_CREATOR = {
+    "jobname": (lambda b: make_link(b.job.name, b.job.baseurl)),
+    "buildno": (lambda b: make_link(b.buildno, b.baseurl)),
+    "status": (lambda b: b._data['result']),
+    "duration": (lambda b: duration(int(b.get_duration().total_seconds()))),
+    "timestamp": (lambda b: b.get_timestamp().strftime("%B %e, %Y @ %R"))
+}
+
+
+def create_row(build, columns=None):
+
+    columns = columns or ["jobname", "buildno", "status", "duration", "timestamp"]
+    return [COLUMN_CREATOR[c](build) for c in columns]
