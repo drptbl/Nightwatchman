@@ -69,7 +69,7 @@ def generate_report(context):
     context.writer.write(["Generated on: {0} UTC".format(now)])
     context.writer.write([""])
 
-    for build_spec in context.config['tests']:
+    for build_spec in context.config['jobs']:
         process_test(context, build_spec)
 
     context.writer.write(["NWM FINISHED"])

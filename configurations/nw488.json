@@ -2,7 +2,7 @@
   "drive_file": "DSE Nightlies 2015Q1",
   "sheet": "NWM 4.8.8",
   "base": {"version": "4.8.8"},
-  "tests": [
+  "jobs": [
     {"job": "QA_NightlyTests"},
     {"job": "QA_Weeklies_Analytics"},
     {"job": "QA_Weekly_Solr"},

@@ -4,7 +4,7 @@
   "base": {"version": "5.0.0", "bps": {"platform_list": "centos72"}},
   "columns": ["jobname", "status"],
   "writer": "console",
-  "tests": [
+  "jobs": [
     {"job": "QA_GraphNightlies"}
   ]
 }
