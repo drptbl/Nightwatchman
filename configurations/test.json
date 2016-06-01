@@ -1,0 +1,8 @@
+{
+  "drive_file": "Fun API Testing",
+  "sheet": "NWM",
+  "base": {"version": "5.0.0", "bps": {"platform_list": "centos72"}},
+  "tests": [
+    {"job": "QA_GraphNightlies"}
+  ]
+}

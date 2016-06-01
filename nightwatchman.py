@@ -52,8 +52,7 @@ def section_header(wks, job_name, build, jobs):
 def process_test(wks, jenkins, config, build_spec):
 
     parent_job = jenkins.get_job(build_spec['job'])
-    version = config['versions'][0] if 'versions' in config else None
-    build = find_build(parent_job, build_spec, version=version)
+    build = find_build(parent_job, config, build_spec)
     print build.buildno
 
     jobs = get_triggered_builds(build)  # [(job name, build)...]

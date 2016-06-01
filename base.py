@@ -82,36 +82,37 @@ def get_build_parameters(build):
 
     for x in build._data['actions']:
         if 'parameters' in x:
-            return x['parameters']
+            return {y["name"]: y["value"] for y in x["parameters"]}
     return None
 
 
-def find_build(job, build_spec, version=None, max_attempts=50):
-    """
-    Finds a build based on the specification in the json file.
-    Expects "build" or "version", but not both.
-    If neither is provided, this function's "version" kwarg will be set to the current value from the json's "versions" list.
-    """
+def compare(bps, config_bps):
 
-    if build_spec.get('build'):
-        return job.get_build(build_spec.get('build'))
+    for k, v in config_bps.iteritems():
+        if k not in bps or bps[k] != v:
+            return False
+    return True
 
-    if build_spec.get('version'):
-        version = build_spec.get('version')
+def find_build(job, config, build_spec, max_attempts=50):
 
-    if not version:
-        raise Exception("finding a build requires a build number or a version")
+    base = dict(config["base"]) if "base" in config else {}
+    base.update(build_spec)
+    print base
 
-    print job, build_spec, version
+    if "build" in base:
+        return job.get_build(base["build"])
 
+    version = base["version"]
     last = job.get_last_buildnumber()
+    print job.name, last, base, version
+
     for i in range(last, max(0, last - max_attempts), -1):
         b = job.get_build_metadata(i)
-        pprint(b._data)
-        ps = get_build_parameters(b)
-        rs = find_dicts(ps, "name", value="DSE_VERSION")
-        print i, rs, ps
-        if len(rs) == 1 and rs[0]["value"] == version:
+        bps = get_build_parameters(b)
+        print i, bps
+        if "bps" in base and not compare(bps, base["bps"]):
+            continue
+        if bps["DSE_VERSION"] == version:
             return job.get_build(i)
 
 
